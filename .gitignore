@@ -1,4 +1,5 @@
 *
 !.gitignore
-!#.py
-
+!*.py
+!requirements.txt
+!commands
