@@ -1,6 +1,6 @@
 import click
 import os, json, fnmatch
-from models import get_globals, update_globals, Session, Global
+from models import get_globals, update_globals, Session, Global, Directory
 
 
 def remove_pwd(path):
