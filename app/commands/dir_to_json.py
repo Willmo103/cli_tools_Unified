@@ -1,6 +1,6 @@
 import click
 import os, json, fnmatch
-
+from models import get_globals, update_globals
 
 def populate_globals():
 
@@ -68,10 +68,8 @@ def dir_to_json(dir_path, all):
     # Use the directory name to construct the output file name
     output_file_name = directory_name + "_repr.json"
 
-    with open("globals.json", "r") as f:
-        data = json.load(f)
-
-    ignored_files: list = data["ignore"]
+    globals_data = get_globals()
+    ignored_files = globals_data["ignore"]
 
     # Create an empty dictionary to store the file tree
     file_tree = {}
