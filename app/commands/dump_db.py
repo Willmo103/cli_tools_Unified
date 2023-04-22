@@ -4,14 +4,19 @@ import sqlalchemy as sa
 from sqlalchemy import create_engine, MetaData, Table
 from urllib.parse import urlparse
 
+
 @click.command()
-@click.option('--source', help='Source database connection string')
-@click.option('--destination', default=None, help='Destination database connection string (optional)')
+@click.option("--source", help="Source database connection string")
+@click.option(
+    "--destination",
+    default=None,
+    help="Destination database connection string (optional)",
+)
 def transfer_data(source, destination):
     if not destination:
         parsed_url = urlparse(source)
-        db_name = os.path.basename(parsed_url.path).split('.')[0]
-        destination = f'sqlite:///{db_name}.sqlite3'
+        db_name = os.path.basename(parsed_url.path).split(".")[0]
+        destination = f"sqlite:///{db_name}.sqlite3"
 
     src_engine = create_engine(source)
     dest_engine = create_engine(destination)
@@ -27,7 +32,9 @@ def transfer_data(source, destination):
     with src_engine.connect() as src_conn, dest_engine.connect() as dest_conn:
         for table_name in metadata.tables:
             # Fetch data from the source database
-            src_data = src_conn.execute(sa.select([metadata.tables[table_name]])).fetchall()
+            src_data = src_conn.execute(
+                sa.select([metadata.tables[table_name]])
+            ).fetchall()
 
             # Insert data into the destination database
             if src_data:
@@ -36,6 +43,3 @@ def transfer_data(source, destination):
     # Close the connections
     src_engine.dispose()
     dest_engine.dispose()
-
-if __name__ == '__main__':
-    transfer_data()

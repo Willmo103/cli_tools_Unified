@@ -7,6 +7,7 @@ Base = declarative_base()
 engine = create_engine(SQLALCHEMY_DATABASE_URI)
 Session = sessionmaker(bind=engine)
 
+
 class Global(Base):
     __tablename__ = "globals"
 
@@ -14,8 +15,10 @@ class Global(Base):
     key = Column(String, unique=True)
     value = Column(String)
 
+
 def init_db():
     Base.metadata.create_all(engine)
+
 
 def get_globals():
     session = Session()
@@ -23,9 +26,19 @@ def get_globals():
     session.close()
     return globals_data
 
+
 def update_globals(globals_data):
     session = Session()
     for key, value in globals_data.items():
-        session.query(Global).filter(Global.key == key).update({"value": ",".join(value)})
+        session.query(Global).filter(Global.key == key).update(
+            {"value": ",".join(value)}
+        )
     session.commit()
     session.close()
+
+
+class Directory(Base):
+    __tablename__ = "directories"
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
+    json_data = Column(String, nullable=True)

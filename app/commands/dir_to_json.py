@@ -1,42 +1,6 @@
 import click
 import os, json, fnmatch
-from models import get_globals, update_globals
-
-def populate_globals():
-
-    # get the root install path to generate/look for globals.json
-    path: str = os.path.dirname(__file__) + os.path.sep + "globals.json"
-
-    # keys is a list of all the keys that need to be present in the json object
-    keys: list = ["ignore"]
-    defaults: dict = {"ignore": [
-    ".venv",
-    "venv",
-    ".gitignore",
-    "__pycache__",
-    "build",
-    "dist",
-    ".env",
-    ".git",
-    "*egg*",
-    "*.json"
-  ]}
-
-    # read the object make sure all keys are present
-    try:
-        with open(path, "r") as f:
-            data = json.load(f)
-        assert all(key in data for key in keys)
-        return
-    except (FileNotFoundError, json.JSONDecodeError):
-        print("No ignore list set, saving defaults.\nuse command `ignore_list` to edit ignored file extensions.")
-        data = defaults.copy()
-
-        with open(path, "w") as f:
-            json.dump(data, f, indent=4)
-
-        print("globals.json created:\n", json.dumps(data, indent=4))
-        return
+from models import get_globals, update_globals, Session, Global
 
 
 def remove_pwd(path):
@@ -46,7 +10,6 @@ def remove_pwd(path):
         return stripped_path
     else:
         return path
-
 
 
 @click.command()
@@ -114,16 +77,23 @@ def dir_to_json(dir_path, all):
                 try:
                     with open(filepath, "r", encoding="utf-8") as f:
                         file_contents = f.read()
-                except Exception as  e:
+                except Exception as e:
                     print(os.path.basename(filepath).split(".")[1])
                     print(e)
                     continue
                 # Add the file contents to the file tree
                 current_dir[filename] = file_contents
 
-    # Save the file tree as a JSON file with the constructed output file name
-    with open(output_file_name, "w") as f:
-        json.dump(file_tree, f)
+    # Use the current working directory instead of the module's path
+    output_file_path = os.path.join(os.getcwd(), output_file_name)
+    session = Session()
+    new_directory = Directory(name=directory_name, json_data=json.dumps(file_tree))
+    session.add(new_directory)
+    session.commit()
+    session.close()
+
+    with open(output_file_path, "w") as f:
+        json.dump(file_tree, f, indent=4)
 
     return
 
@@ -135,32 +105,25 @@ def dir_to_json(dir_path, all):
     "-l", "--list", "list_", is_flag=True, help="List all files in the ignore list"
 )
 def code_edit_ignore(add, delete, list_):
-    # Load the JSON file
-    with open("globals.json", "r") as f:
-        data = json.load(f)
-
-    ignored_files = data["ignore"]
+    globals_data = get_globals()
+    ignored_files = globals_data["ignore"]
 
     if list_:
-
         # List all the files in the ignore list
         for i, item in enumerate(ignored_files):
             print(f"{i}: {item}")
 
     elif add:
-
         # Prompt the user to enter a filename to add
         filename = click.prompt("Enter a filename to ignore")
         if filename in ignored_files:
             click.echo(f"{filename} is already in the ignore list.")
-
         else:
             # Confirm with the user before adding the file to the ignore list
             if click.confirm(f"Add {filename} to the ignore list?"):
                 ignored_files.append(filename)
-                # Update the JSON file
-                with open("globals.json", "w") as f:
-                    json.dump(data, f, indent=4)
+                # Update the globals
+                update_globals({"ignore": ignored_files})
 
     elif delete:
         # Prompt the user to select a file to delete
@@ -170,20 +133,16 @@ def code_edit_ignore(add, delete, list_):
 
         if selection < 0 or selection >= len(ignored_files):
             click.echo(f"Invalid selection: {selection}")
-
         else:
             # Confirm with the user before deleting the file from the ignore list
             filename = ignored_files[selection]
 
             if click.confirm(f"Delete {filename} from the ignore list?"):
                 ignored_files.pop(selection)
-                # Update the JSON file
-
-                with open("globals.json", "w") as f:
-                    json.dump(data, f, indent=4)
+                # Update the globals
+                update_globals({"ignore": ignored_files})
 
     else:
         # No options specified, so just list all files in the ignore list
         for i, item in enumerate(ignored_files):
             print(f"{i}: {item}")
-

@@ -1,6 +1,7 @@
 import click
 import os, json
 
+
 def create_directory_structure(data, path):
     """Create directory structure based on JSON object"""
     if isinstance(data, dict):
@@ -23,4 +24,3 @@ def generate_directory(json_obj, path):
         data = json.load(f)
     create_directory_structure(data, path)
     click.echo(f"Directory structure generated at {path}")
-
