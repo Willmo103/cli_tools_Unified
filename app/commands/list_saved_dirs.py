@@ -5,7 +5,7 @@ from app.models import Directory, Session
 
 
 @click.command()
-def generate_json():
+def list_saved_directories():
     session = Session()
     directories = session.query(Directory).all()
     session.close()

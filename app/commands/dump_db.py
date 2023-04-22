@@ -1,7 +1,7 @@
 import os
 import click
 import sqlalchemy as sa
-from sqlalchemy import create_engine, MetaData, Table
+from sqlalchemy import create_engine, MetaData
 from urllib.parse import urlparse
 
 
