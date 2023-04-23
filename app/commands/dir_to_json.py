@@ -38,7 +38,7 @@ def dir_to_json(dir_path, all, debug):
     dir_path = remove_pwd(os.path.normpath(dir_path))
     if debug:
         all = True
-        output_file_name = directory_name + "_debug_repr.json"
+        output_file_name = directory_name + "_empty_repr.json"
     else:
         output_file_name = directory_name + "_repr.json"
 
