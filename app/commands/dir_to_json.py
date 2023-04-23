@@ -52,7 +52,7 @@ def dir_to_json(dir_path, all, debug):
         current_dir = file_tree[root_fp]
 
         dir_ = os.path.normpath(root).split(os.path.sep)[0]
-        if is_ignored(dir_, ignored_files) and all:
+        if is_ignored(dir_, ignored_files):
             file_tree[root_fp].setdefault(dir_, {})
             continue
         else:
