@@ -19,72 +19,77 @@ def remove_pwd(path):
     is_flag=True,
     help="Creates full file structure adding empty dicts for all directories present and empty str for all files present",
 )
+@click.option(
+    "-d",
+    "--debug",
+    is_flag=True,
+    help="Outputs a JSON with empty objects or strings representing the sample output structure of this command",
+)
 @click.argument("dir_path", type=click.Path(exists=True))
-def dir_to_json(dir_path, all):
+def dir_to_json(dir_path, all, debug):
     """"""
-    # Get the directory name from the dir_path argument
     directory_name = os.path.basename(os.path.abspath(dir_path))
-
-    # remove the pwd from the path to avoid extra nesting
     dir_path = remove_pwd(os.path.normpath(dir_path))
-
-    # Use the directory name to construct the output file name
-    output_file_name = directory_name + "_repr.json"
+    if debug:
+        all = True
+        output_file_name = directory_name + "_debug_repr.json"
+    else:
+        output_file_name = directory_name + "_repr.json"
 
     globals_data = get_globals()
     ignored_files = globals_data["ignore"]
 
-    # Create an empty dictionary to store the file tree
-    file_tree = {}
+    root_fp = os.path.basename(os.path.abspath(dir_path))
+    file_tree = {f"{root_fp}": {}}
 
-    # Traverse the directory and get the file tree
     for root, dirs, files in os.walk(dir_path):
-        # print(root, "\n\n")
-        current_dir = file_tree
-        # Traverse all the directories in the current directory
-        for directory in os.path.normpath(root).split(os.path.sep):
+        current_dir = file_tree[root_fp]
+        dir_parts = os.path.normpath(root).split(os.path.sep)[1:]
+    for root, dirs, files in os.walk(dir_path):
+        current_dir = file_tree[root_fp]
+        dir_parts = os.path.normpath(root).split(os.path.sep)[1:]
+
+        inside_ignored_dir = False
+
+        for directory in dir_parts:
             ignore_dir = False
             for pattern in ignored_files:
                 if fnmatch.fnmatch(directory, pattern):
                     ignore_dir = True
             if ignore_dir:
+                inside_ignored_dir = True
                 if all:
-                    current_dir = current_dir.setdefault(
-                        os.path.basename(os.path.abspath(directory)), {}
-                    )
+                    current_dir = current_dir.setdefault(directory, {})
                 break
-            current_dir = current_dir.setdefault(
-                os.path.basename(os.path.abspath(directory)), {}
-            )
-        else:
-            # Traverse all the files in the current directory
-            for filename in files:
-                # Check if the file matches the ignored_files patterns
-                ignore_file = False
-                for pattern in ignored_files:
-                    if fnmatch.fnmatch(filename, pattern):
-                        ignore_file = True
-                        break
-                if ignore_file:
-                    if all:
-                        current_dir[filename] = ""
-                    continue
+            current_dir = current_dir.setdefault(directory, {})
 
-                # Get the full path of the file
-                filepath = os.path.join(root, filename)
+        if inside_ignored_dir:
+            continue
 
-                # Read the contents of the file
+        for filename in files:
+            ignore_file = False
+            for pattern in ignored_files:
+                if fnmatch.fnmatch(filename, pattern):
+                    ignore_file = True
+                    break
+            if ignore_file:
+                if all:
+                    current_dir[filename] = ""
+                continue
+
+            filepath = os.path.join(root, filename)
+
+            if not debug:
                 try:
                     with open(filepath, "r", encoding="utf-8") as f:
                         file_contents = f.read()
                 except Exception as e:
-                    print(os.path.basename(filepath).split(".")[1])
-                    print(e)
                     continue
-                # Add the file contents to the file tree
-                current_dir[filename] = file_contents
+            else:
+                file_contents = ""
 
-    # Use the current working directory instead of the module's path
+            current_dir[filename] = file_contents
+
     output_file_path = os.path.join(os.getcwd(), output_file_name)
     session = Session()
     new_directory = Directory(name=directory_name, json_data=json.dumps(file_tree))
