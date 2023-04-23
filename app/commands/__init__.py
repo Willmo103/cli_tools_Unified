@@ -4,8 +4,6 @@ from app import (
     Global as Global,
     Session as Session,
     initialize_db as initialize_db,
-)
-from app import (
     get_globals as get_globals,
     update_globals as update_globals,
     Directory as Directory,

@@ -11,9 +11,9 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "from-json = app.commands.dir_from_json:dir_to_json",
-            "to-json = app.commands.json_to_dir:json_to_dir",
-            "list-json = app.commands.list_saved_dirs:saved_directories",
+            "to-json = app.commands.dir_to_json:dir_to_json",
+            "from-json = app.commands.json_to_dir:json_to_dir",
+            "list-json = app.commands.list_saved_dirs:list_saved_directories",
             "edit-json = app.commands.edit_ignore:edit_ignore",
         ],
     },

@@ -87,6 +87,7 @@ def initialize_db():
         "node_modules",
         ".vscode",
         "package-lock.json",
+        "*.db",
     ]
 
     session = Session()
