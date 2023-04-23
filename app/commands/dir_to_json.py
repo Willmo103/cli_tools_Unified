@@ -57,6 +57,7 @@ def dir_to_json(dir_path, all, debug):
             continue
         else:
             dir_parts = os.path.normpath(root).split(os.path.sep)[1:]
+            current_dir = file_tree[root_fp].setdefault(dir_, {})
 
         inside_ignored_dir = False
 
