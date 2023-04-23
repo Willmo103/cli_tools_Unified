@@ -1,7 +1,7 @@
 import click
 import json
 import os
-from app.models import Directory, Session
+from . import Directory, Session
 
 
 @click.command()

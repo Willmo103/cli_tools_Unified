@@ -1,4 +1,4 @@
-from config import DB_PATH
+from app.config import DB_PATH
 from app.models import init_db, Global, Session
 
 

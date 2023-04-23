@@ -1,6 +1,6 @@
 
 import click
-from app.models import get_globals, update_globals
+from . import get_globals, update_globals
 
 
 @click.command()

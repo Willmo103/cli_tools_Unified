@@ -1,6 +1,6 @@
 import click
 import os, json
-from app.models import Directory, Session
+from . import Directory, Session
 
 
 def create_directory_structure(data, path):
