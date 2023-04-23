@@ -1,4 +1,3 @@
-
 import click
 from . import get_globals, update_globals
 

@@ -16,6 +16,13 @@ class Global(Base):
     value = Column(String)
 
 
+class Directory(Base):
+    __tablename__ = "directories"
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
+    json_data = Column(String, nullable=True)
+
+
 def init_db():
     Base.metadata.create_all(engine)
 
@@ -37,8 +44,55 @@ def update_globals(globals_data):
     session.close()
 
 
-class Directory(Base):
-    __tablename__ = "directories"
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-    json_data = Column(String, nullable=True)
+def initialize_db():
+    init_db()
+    default_ignored_files = [
+        ".venv",
+        "venv",
+        ".gitignore",
+        "__pycache__",
+        "build",
+        "dist",
+        ".env",
+        ".git",
+        "*egg*",
+        "ini",
+        "jpg",
+        "zip",
+        "pdf",
+        "jar",
+        "png",
+        "exe",
+        "ctb",
+        "ctx",
+        "ctx~",
+        "ctx~~",
+        "ctx~~~",
+        "lnk",
+        "pack",
+        "ico",
+        "wasm",
+        "jekyll-metadata",
+        "swf",
+        "gif",
+        "lock",
+        "bin",
+        "tar",
+        "dll",
+        "pyd",
+        "lib",
+        "*amd64",
+        "mp4",
+        "npz",
+        "node_modules",
+        ".vscode",
+        "package-lock.json",
+    ]
+
+    session = Session()
+    if not session.query(Global).filter(Global.key == "ignore").first():
+        new_global = Global(key="ignore", value=",".join(default_ignored_files))
+        session.add(new_global)
+        session.commit()
+
+    session.close()

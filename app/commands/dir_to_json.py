@@ -1,6 +1,6 @@
 import click
 import os, json, fnmatch
-from . import get_globals,  Session, Directory
+from . import get_globals, Session, Directory
 
 
 def remove_pwd(path):
@@ -96,4 +96,3 @@ def dir_to_json(dir_path, all):
         json.dump(file_tree, f, indent=4)
 
     return
-
