@@ -13,6 +13,7 @@ setup(
         "console_scripts": [
             "to-json = app.commands.dir_to_json:dir_to_json",
             "from-json = app.commands.json_to_dir:json_to_dir",
+            "to-md = app.commands.dir_to_md:dir_to_md",
             "list-json = app.commands.list_saved_dirs:list_saved_directories",
             "edit-json = app.commands.edit_ignore:edit_ignore",
         ],
