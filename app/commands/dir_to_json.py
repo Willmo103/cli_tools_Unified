@@ -11,6 +11,12 @@ def remove_pwd(path):
     else:
         return path
 
+def is_ignored(name, ignored_patterns):
+    for pattern in ignored_patterns:
+        if fnmatch.fnmatch(name, pattern):
+            return True
+    return False
+
 
 @click.command()
 @click.option(
@@ -44,10 +50,13 @@ def dir_to_json(dir_path, all, debug):
 
     for root, dirs, files in os.walk(dir_path):
         current_dir = file_tree[root_fp]
-        dir_parts = os.path.normpath(root).split(os.path.sep)[1:]
-    for root, dirs, files in os.walk(dir_path):
-        current_dir = file_tree[root_fp]
-        dir_parts = os.path.normpath(root).split(os.path.sep)[1:]
+
+        dir_ = os.path.normpath(root).split(os.path.sep)[0]
+        if is_ignored(dir_, ignored_files) and all:
+            file_tree[root_fp].setdefault(dir_, {})
+            continue
+        else:
+            dir_parts = os.path.normpath(root).split(os.path.sep)[1:]
 
         inside_ignored_dir = False
 
@@ -56,6 +65,9 @@ def dir_to_json(dir_path, all, debug):
             for pattern in ignored_files:
                 if fnmatch.fnmatch(directory, pattern):
                     ignore_dir = True
+                elif directory.startswith(".git"):
+                    ignore_dir = True
+                    break
             if ignore_dir:
                 inside_ignored_dir = True
                 if all:
