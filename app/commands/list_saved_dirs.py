@@ -1,7 +1,7 @@
+from . import Directory, Session
 import click
 import json
 import os
-from . import Directory, Session
 
 
 @click.command()

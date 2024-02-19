@@ -29,7 +29,9 @@ def init_db():
 
 def get_globals():
     session = Session()
-    globals_data = {g.key: g.value.split(",") for g in session.query(Global).all()}
+    globals_data = {
+        g.key: g.value.split(",") for g in session.query(Global).all()
+    }
     session.close()
     return globals_data
 
@@ -92,7 +94,9 @@ def initialize_db():
 
     session = Session()
     if not session.query(Global).filter(Global.key == "ignore").first():
-        new_global = Global(key="ignore", value=",".join(default_ignored_files))
+        new_global = Global(
+            key="ignore", value=",".join(default_ignored_files)
+        )
         session.add(new_global)
         session.commit()
 

@@ -1,6 +1,7 @@
-import click
-import os, json
 from . import Directory, Session
+import click
+import json
+import os
 
 
 def create_directory_structure(data, path):

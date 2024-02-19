@@ -1,5 +1,7 @@
-# Import your commands here to make them easily accessible when importing the 'commands' modules
-from .config import SQLALCHEMY_DATABASE_URI, DB_PATH
+# Import your commands here to make them easily accessible
+# when importing the 'commands' modules
+
+from .config import DB_PATH
 from .models import (
     init_db as init_db,
     Global as Global,
