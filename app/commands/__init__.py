@@ -1,4 +1,4 @@
-from app import SQLALCHEMY_DATABASE_URI, DB_PATH
+from app.config import SQLALCHEMY_DATABASE_URI, DB_PATH
 from app import (
     init_db as init_db,
     Global as Global,
