@@ -23,13 +23,26 @@ class Directory(Base):
     json_data = Column(String, nullable=True)
 
 
+class Log_Entry(Base):
+    __tablename__ = "log_entries"
+    id = Column(Integer, primary_key=True)
+    logDate = Column(String, nullable=False)
+    logPath = Column(String, nullable=False)
+    logFileName = Column(String, nullable=False)
+    logLineNo = Column(Integer, nullable=False)
+    logLevel = Column(String, nullable=False)
+    logMessage = Column(String, nullable=False)
+
+
 def init_db():
     Base.metadata.create_all(engine)
 
 
 def get_globals():
     session = Session()
-    globals_data = {g.key: g.value.split(",") for g in session.query(Global).all()}
+    globals_data = {
+        g.key: g.value.split(",") for g in session.query(Global).all()
+    }  # noqa
     session.close()
     return globals_data
 
@@ -92,7 +105,9 @@ def initialize_db():
 
     session = Session()
     if not session.query(Global).filter(Global.key == "ignore").first():
-        new_global = Global(key="ignore", value=",".join(default_ignored_files))
+        new_global = Global(
+            key="ignore", value=",".join(default_ignored_files)
+        )
         session.add(new_global)
         session.commit()
 

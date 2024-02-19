@@ -1,5 +1,6 @@
 import click
-import os, json
+import os
+import json
 from . import Directory, Session
 
 

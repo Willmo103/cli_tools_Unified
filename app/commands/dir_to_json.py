@@ -1,6 +1,8 @@
-import click
-import os, json, fnmatch
 from . import get_globals, Session, Directory
+import fnmatch
+import click
+import json
+import os
 
 
 def remove_pwd(path):
@@ -10,6 +12,7 @@ def remove_pwd(path):
         return stripped_path
     else:
         return path
+
 
 def is_ignored(name, ignored_patterns):
     for pattern in ignored_patterns:
@@ -23,13 +26,13 @@ def is_ignored(name, ignored_patterns):
     "-a",
     "--all",
     is_flag=True,
-    help="Creates full file structure adding empty dicts for all directories present and empty str for all files present",
+    help="Creates full file structure adding empty dicts for all directories present and empty str for all files present",  # noqa
 )
 @click.option(
     "-d",
     "--debug",
     is_flag=True,
-    help="Outputs a JSON with empty objects or strings representing the sample output structure of this command",
+    help="Outputs a JSON with empty objects or strings representing the sample output structure of this command",  # noqa
 )
 @click.argument("dir_path", type=click.Path(exists=True))
 def dir_to_json(dir_path, all, debug):
@@ -93,7 +96,7 @@ def dir_to_json(dir_path, all, debug):
                 try:
                     with open(filepath, "r", encoding="utf-8") as f:
                         file_contents = f.read()
-                except Exception as e:
+                except Exception:
                     continue
             else:
                 file_contents = ""
@@ -102,7 +105,9 @@ def dir_to_json(dir_path, all, debug):
 
     output_file_path = os.path.join(os.getcwd(), output_file_name)
     session = Session()
-    new_directory = Directory(name=directory_name, json_data=json.dumps(file_tree))
+    new_directory = Directory(
+        name=directory_name, json_data=json.dumps(file_tree)
+    )
     session.add(new_directory)
     session.commit()
     session.close()
